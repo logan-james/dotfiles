@@ -18,7 +18,7 @@ pacman -S git
 pacman -S stow
 ```
 
-### Installation
+## Installation
 
 First, check out the dotfiles repo in your $HOME directory using git
 
@@ -33,7 +33,7 @@ then use GNU stow to create symlinks
 $ stow .
 ```
 
-#### Notes
+## Notes
 
 The dotfiles directory acts as your home directory, thus layout files inside the dotfile directory as if they're in home. 
 
