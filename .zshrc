@@ -132,26 +132,85 @@ source $ZSH/oh-my-zsh.sh
 # Created by `pipx` on 2024-04-22 20:23:20
 export PATH="$PATH:/Users/lj/.local/bin"
 
-# ---- FZF -----
+# ---- FZF ----------------------------------------------------
 
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --zsh)"
 
-# -- Use fd instead of fzf --
+# --- setup fzf theme ------------------------------------------
+fg="#CDD6F4"
+bg="#1E1E2E"
+bg_highlight="#32344A"
+purple="#DDB6F2"
+blue="#89DCEB"
+cyan="#94E2D5"
 
+export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
+
+
+# -- Use fd instead of fzf ------------------------------------
+
+# changing default command that is use to look through files and directories
+# using fd, show hidden directories, strip current working directory and dont show .git files
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+# ctrl-t command will be the dault command
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
+# this is for using ** completion when looks for files and directories
 _fzf_compgen_path() {
   fd --hidden --exclude .git . "$1"
 }
 
-# for starship, still being used in bash, not bad... starship.rs/config/
-# trying out starship I commented out p10k stuff about
-# comment out for powerlevel10k ------------------------------------
+# Use fd to generate the list for directory completion
+# this is for ** tab functionality but when using something like cd
+_fzf_compgen_dir() {
+  fd --type=d --hidden --exclude .git . "$1"
+}
+
+# --------- Bat (better than cat) Theme --------------------------------
+export BAT_THEME=Catppuccin Mocha
+
+# ---------------------fzf-git------------fuzzy finder for git---------------------
+# script whos repo I cloned at https://github.com/junegunn/fzf-git.sh.git
+# allows searching through git with fuzzy finder. Ctrl+g+.. bunch of commands
+source ~/fzf-git.sh/fzf-git.sh
+
+# setting up previews with fzf ------------------------------------------------
+# using ctrl-t using bat to preview the file limitin file content to 500 lines
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+    export|unset) fzf --preview "eval 'echo $'{}"         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                   "$@" ;;
+    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
+  esac
+}
+
+# eza (better than ls) -------------------------------------------------------------
+alias ls="eza --color=always --long --no-filesize --icons=always --no-time --no-user --no-permissions"
+
+
+# ---- Zoxide (better cd) ------------------------------------------------------
+eval "$(zoxide init zsh)"
+
+alias cd='z'
+
+
+# Starship -----------------------------------------------------------------------
+# Trying out starship I commented out p10k stuff above
+# Comment out for powerlevel10k
 eval "$(starship init zsh)"
 
