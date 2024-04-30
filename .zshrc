@@ -177,7 +177,7 @@ export BAT_THEME=Catppuccin Mocha
 # ---------------------fzf-git------------fuzzy finder for git---------------------
 # script whos repo I cloned at https://github.com/junegunn/fzf-git.sh.git
 # allows searching through git with fuzzy finder. Ctrl+g+.. bunch of commands
-source ~/fzf-git.sh/fzf-git.sh
+source ~/Documents/fzf-git.sh/fzf-git.sh
 
 # setting up previews with fzf ------------------------------------------------
 # using ctrl-t using bat to preview the file limitin file content to 500 lines
